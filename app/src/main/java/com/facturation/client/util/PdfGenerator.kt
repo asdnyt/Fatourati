@@ -13,7 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 object PdfGenerator {
-    fun generateInvoicePdf(context: Context, invoice: Invoice, items: List<InvoiceItem>): File {
+        fun generateInvoicePdf(context: Context, invoice: Invoice, items: List<InvoiceItem>, clientPhone: String = ""): File {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = pdfDocument.startPage(pageInfo)
@@ -38,7 +38,7 @@ object PdfGenerator {
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Client : ${invoice.clientName}", 320f, 85f, paint)
         paint.typeface = Typeface.DEFAULT
-        canvas.drawText("Tél : ${invoice.clientPhone}", 320f, 105f, paint)
+        canvas.drawText("Tél : $clientPhone", 320f, 105f, paint)
 
         paint.color = Color.parseColor("#1E293B")
         canvas.drawRect(30f, 140f, 565f, 165f, paint)
