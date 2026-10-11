@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gestion Clients &amp; Facturation</string>
+    <string name="clients_title">Clients</string>
+    <string name="invoices_title">Factures</string>
+    <string name="situation_title">Situation financière</string>
+    <string name="new_client">Nouveau client</string>
+    <string name="save_invoice">Enregistrer la facture</string>
+    <string name="share_whatsapp">Partager via WhatsApp</string>
 </resources>

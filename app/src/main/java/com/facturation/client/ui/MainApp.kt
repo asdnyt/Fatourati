@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.facturation.client.ui.theme.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.facturation.client.data.model.Client
 import com.facturation.client.ui.screens.ClientHistoryScreen
@@ -28,12 +30,19 @@ fun MainApp(viewModel: MainViewModel) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = NavyBar) {
                 NavItem.values().forEach { item ->
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = item.title) },
                         label = { Text(item.title) },
                         selected = currentTab == item && viewingClientHistory == null,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color(0xFF60A5FA),
+                            indicatorColor = BlueHeader,
+                            unselectedIconColor = TextMuted,
+                            unselectedTextColor = TextMuted
+                        ),
                         onClick = {
                             viewingClientHistory = null
                             currentTab = item
@@ -43,7 +52,7 @@ fun MainApp(viewModel: MainViewModel) {
             }
         }
     ) { innerPadding ->
-        Surface(modifier = Modifier.padding(innerPadding)) {
+        Surface(modifier = Modifier.padding(innerPadding), color = NavyBg) {
             when {
                 viewingClientHistory != null -> {
                     ClientHistoryScreen(

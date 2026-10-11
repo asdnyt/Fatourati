@@ -1,5 +1,6 @@
 package com.facturation.client.ui.screens
 
+import com.facturation.client.ui.theme.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,7 +37,7 @@ fun ClientHistoryScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1E293B),
+                    containerColor = BlueHeader,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 )
@@ -89,19 +90,19 @@ fun InvoiceHistoryCard(invoice: Invoice) {
             ) {
                 Column {
                     Text("Total", fontSize = 11.sp, color = Color.Gray)
-                    Text("%.2f €".format(invoice.totalAmount), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                    Text("%.2f DH".format(invoice.totalAmount), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 }
                 Column {
                     Text("Payé", fontSize = 11.sp, color = Color.Gray)
-                    Text("%.2f €".format(invoice.paidAmount), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF059669))
+                    Text("%.2f DH".format(invoice.paidAmount), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = GreenPay)
                 }
                 Column {
                     Text("Reste", fontSize = 11.sp, color = Color.Gray)
                     Text(
-                        "%.2f €".format(invoice.remainingAmount),
+                        "%.2f DH".format(invoice.remainingAmount),
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = if (invoice.remainingAmount > 0) Color(0xFFDC2626) else Color(0xFF16A34A)
+                        color = if (invoice.remainingAmount > 0) RedDebt else GreenPay
                     )
                 }
             }

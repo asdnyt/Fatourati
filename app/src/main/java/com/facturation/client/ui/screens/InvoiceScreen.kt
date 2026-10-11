@@ -1,5 +1,6 @@
 package com.facturation.client.ui.screens
 
+import com.facturation.client.ui.theme.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -134,7 +135,7 @@ fun InvoiceScreen(
                                 horizontalArrangement = Arrangement.End
                             ) {
                                 Text(
-                                    text = "Total ligne: %.2f €".format(item.total),
+                                    text = "Total ligne: %.2f DH".format(item.total),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -158,7 +159,7 @@ fun InvoiceScreen(
                     OutlinedTextField(
                         value = paidAmountStr,
                         onValueChange = { paidAmountStr = it },
-                        label = { Text("Montant payé (€)") },
+                        label = { Text("Montant payé (DH)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
@@ -179,7 +180,7 @@ fun InvoiceScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Total général:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text("%.2f €".format(totalGeneral), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF1E293B))
+                        Text("%.2f DH".format(totalGeneral), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -187,7 +188,7 @@ fun InvoiceScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Montant payé:", fontSize = 14.sp)
-                        Text("%.2f €".format(montantPaye), fontSize = 14.sp, color = Color(0xFF059669), fontWeight = FontWeight.SemiBold)
+                        Text("%.2f DH".format(montantPaye), fontSize = 14.sp, color = GreenPay, fontWeight = FontWeight.SemiBold)
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -195,7 +196,7 @@ fun InvoiceScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Reste à payer:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text("%.2f €".format(resteAPayer), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFFDC2626))
+                        Text("%.2f DH".format(resteAPayer), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = RedDebt)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
@@ -216,7 +217,7 @@ fun InvoiceScreen(
                         },
                         enabled = selectedClient != null && totalGeneral > 0,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB))
+                        colors = ButtonDefaults.buttonColors(containerColor = BlueHeader)
                     ) {
                         Text("Enregistrer la facture", fontWeight = FontWeight.Bold)
                     }

@@ -1,5 +1,6 @@
 package com.facturation.client.ui.screens
 
+import com.facturation.client.ui.theme.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +33,7 @@ fun SituationScreen(
             TopAppBar(
                 title = { Text("Situation Financière", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF7C3AED),
+                    containerColor = BlueHeader,
                     titleContentColor = Color.White
                 )
             )
@@ -49,10 +50,10 @@ fun SituationScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E8FF))
+                colors = CardDefaults.cardColors(containerColor = NavyCard)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Vue globale de l'entreprise", fontWeight = FontWeight.Bold, color = Color(0xFF6B21A8))
+                    Text("Vue globale de l'entreprise", fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -60,15 +61,15 @@ fun SituationScreen(
                     ) {
                         Column {
                             Text("Total des Ventes", fontSize = 12.sp, color = Color.Gray)
-                            Text("%.2f €".format(totalVentes), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF1E293B))
+                            Text("%.2f DH".format(totalVentes), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
                         }
                         Column {
                             Text("Total Encaissé", fontSize = 12.sp, color = Color.Gray)
-                            Text("%.2f €".format(totalPaye), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF059669))
+                            Text("%.2f DH".format(totalPaye), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = GreenPay)
                         }
                         Column {
                             Text("Reste à Recouvrer", fontSize = 12.sp, color = Color.Gray)
-                            Text("%.2f €".format(totalRestant), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFFDC2626))
+                            Text("%.2f DH".format(totalRestant), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = RedDebt)
                         }
                     }
                 }
@@ -119,15 +120,15 @@ fun ClientSituationCard(item: ClientFinancialSummary, onClick: () -> Unit) {
             ) {
                 Column {
                     Text("Ventes", fontSize = 11.sp, color = Color.Gray)
-                    Text("%.2f €".format(item.totalSales), fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                    Text("%.2f DH".format(item.totalSales), fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 }
                 Column {
                     Text("Payé", fontSize = 11.sp, color = Color.Gray)
-                    Text("%.2f €".format(item.totalPaid), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF059669))
+                    Text("%.2f DH".format(item.totalPaid), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = GreenPay)
                 }
                 Column {
                     Text("Reste dû", fontSize = 11.sp, color = Color.Gray)
-                    Text("%.2f €".format(item.totalRemaining), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (item.totalRemaining > 0) Color(0xFFDC2626) else Color(0xFF16A34A))
+                    Text("%.2f DH".format(item.totalRemaining), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (item.totalRemaining > 0) RedDebt else GreenPay)
                 }
             }
         }

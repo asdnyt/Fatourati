@@ -1,5 +1,6 @@
 package com.facturation.client.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.draw.clip
+import com.facturation.client.ui.theme.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import com.facturation.client.data.local.ClientWithBalance
 import com.facturation.client.ui.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientsScreen(
     viewModel: MainViewModel,
@@ -27,39 +32,82 @@ fun ClientsScreen(
 ) {
     val clients by viewModel.clientsWithBalance.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var query by remember { mutableStateOf("") }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Clients", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter un client", tint = Color.White)
-            }
-        }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (clients.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Aucun client. Appuyez sur + pour ajouter.", color = Color.Gray)
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+    val filtered = clients.filter {
+        it.name.contains(query, ignoreCase = true) || it.phone.contains(query)
+    }
+    val debtCount = clients.count { it.remainingBalance > 0 }
+    val totalDebt = clients.sumOf { it.remainingBalance }
+
+    Column(modifier = Modifier.fillMaxSize().background(NavyBg)) {
+        Column(
+            modifier = Modifier.fillMaxWidth().background(BlueHeader).padding(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.size(46.dp).clip(RoundedCornerShape(14.dp))
+                        .background(Color.White.copy(alpha = 0.18f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    items(clients) { client ->
-                        ClientCard(client = client, onClick = { onClientClick(client) })
-                    }
+                    Icon(Icons.Default.People, contentDescription = null, tint = Color.White)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Clients", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Text("${clients.size} clients enregistrés", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                }
+                Button(
+                    onClick = { showAddDialog = true },
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BlueHeader)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Nouveau", fontWeight = FontWeight.Bold)
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text("Rechercher par nom ou téléphone...", color = Color.White.copy(alpha = 0.7f)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White.copy(alpha = 0.8f)) },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().background(NavyBar).padding(horizontal = 16.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Créances en cours : $debtCount", color = TextMuted, fontSize = 13.sp)
+            Text("Solde total : %.2f DH".format(totalDebt), color = RedDebt, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+        }
+
+        if (filtered.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Aucun client. Appuyez sur Nouveau pour ajouter.", color = TextMuted)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(filtered) { client ->
+                    ClientCard(client = client, onClick = { onClientClick(client) })
                 }
             }
         }
@@ -78,48 +126,56 @@ fun ClientsScreen(
 
 @Composable
 fun ClientCard(client: ClientWithBalance, onClick: () -> Unit) {
-    val remainingColor = if (client.remainingBalance > 0) Color(0xFFDC2626) else Color(0xFF16A34A)
+    val owes = client.remainingBalance > 0
+    val accent = if (owes) RedDebt else GreenPay
 
-    Card(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(NavyCard)
+            .clickable(onClick = onClick)
+            .height(IntrinsicSize.Min)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.width(5.dp).fillMaxHeight().background(accent))
+        Column(modifier = Modifier.padding(16.dp).weight(1f)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
-                Text(
-                    text = client.name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Text(
-                    text = "Solde: %.2f €".format(client.remainingBalance),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = remainingColor
-                )
+                Text(client.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 19.sp, modifier = Modifier.weight(1f))
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("SOLDE RESTANT", color = TextMuted, fontSize = 10.sp)
+                    Text("%.2f DH".format(client.remainingBalance), color = accent, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    Text(
+                        if (owes) "Reste à payer" else "Soldé",
+                        color = accent,
+                        fontSize = 10.sp,
+                        modifier = Modifier.clip(RoundedCornerShape(6.dp))
+                            .background(accent.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Phone,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(text = client.phone, fontSize = 14.sp, color = Color.Gray)
+                Icon(Icons.Default.Phone, contentDescription = null, modifier = Modifier.size(15.dp), tint = BlueHeader)
+                Spacer(Modifier.width(6.dp))
+                Text(client.phone, color = TextMuted, fontSize = 14.sp)
             }
             if (client.address.isNotBlank()) {
-                Text(text = client.address, fontSize = 12.sp, color = Color.Gray)
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(15.dp), tint = TextMuted)
+                    Spacer(Modifier.width(6.dp))
+                    Text(client.address, color = TextMuted, fontSize = 13.sp, maxLines = 1)
+                }
             }
+            Spacer(Modifier.height(10.dp))
+            Divider(color = Color(0xFF1E2D4D))
+            Spacer(Modifier.height(10.dp))
+            Text("Créer une facture  ›", color = Color(0xFF60A5FA), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
         }
     }
 }

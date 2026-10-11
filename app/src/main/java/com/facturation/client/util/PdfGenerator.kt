@@ -13,7 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 object PdfGenerator {
-        fun generateInvoicePdf(context: Context, invoice: Invoice, items: List<InvoiceItem>, clientPhone: String = ""): File {
+    fun generateInvoicePdf(context: Context, invoice: Invoice, items: List<InvoiceItem>, clientPhone: String = ""): File {
         val pdfDocument = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = pdfDocument.startPage(pageInfo)
@@ -47,8 +47,8 @@ object PdfGenerator {
         paint.typeface = Typeface.DEFAULT
         canvas.drawText("DÉSIGNATION", 40f, 157f, paint)
         canvas.drawText("QTÉ", 340f, 157f, paint)
-        canvas.drawText("P.U. (€)", 410f, 157f, paint)
-        canvas.drawText("TOTAL (€)", 500f, 157f, paint)
+        canvas.drawText("P.U. (DH)", 410f, 157f, paint)
+        canvas.drawText("TOTAL (DH)", 500f, 157f, paint)
 
         var y = 185f
         paint.color = Color.BLACK
@@ -68,15 +68,15 @@ object PdfGenerator {
         paint.color = Color.BLACK
         paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         canvas.drawText("Total Général :", 315f, y + 25f, paint)
-        canvas.drawText(String.format("%.2f €", invoice.totalAmount), 480f, y + 25f, paint)
+        canvas.drawText(String.format("%.2f DH", invoice.totalAmount), 480f, y + 25f, paint)
 
         paint.color = Color.parseColor("#059669")
         canvas.drawText("Montant Payé :", 315f, y + 48f, paint)
-        canvas.drawText(String.format("%.2f €", invoice.paidAmount), 480f, y + 48f, paint)
+        canvas.drawText(String.format("%.2f DH", invoice.paidAmount), 480f, y + 48f, paint)
 
         paint.color = Color.parseColor("#DC2626")
         canvas.drawText("Reste à Payer :", 315f, y + 70f, paint)
-        canvas.drawText(String.format("%.2f €", invoice.remainingAmount), 480f, y + 70f, paint)
+        canvas.drawText(String.format("%.2f DH", invoice.remainingAmount), 480f, y + 70f, paint)
 
         pdfDocument.finishPage(page)
 
